@@ -6,6 +6,7 @@ import StartupIPO from "./components/Games/StartuoIPO";
 import CrisisSimulator from "./components/Games/CrisisSimulator";
 import BuildPortfolio from "./components/Games/BuildPortfolio";
 import TimeTraveler from "./components/Games/TimeTraveler";
+import ChartMaster from "./components/Games/ChartMaster";
 
 function App() {
   const [isOpen, setIsOpen] = useState(true);
@@ -21,6 +22,7 @@ function App() {
       <CrisisSimulator />
       <BuildPortfolio/>
       <TimeTraveler/>
+      <ChartMaster/>
     </>
   );
 }
