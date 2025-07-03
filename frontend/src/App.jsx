@@ -8,6 +8,7 @@ import BuildPortfolio from "./components/Games/BuildPortfolio";
 import TimeTraveler from "./components/Games/TimeTraveler";
 import ChartMaster from "./components/Games/ChartMaster";
 
+
 function App() {
   const [isOpen, setIsOpen] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
