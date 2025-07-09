@@ -21,11 +21,14 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const res = await axios.get("/api/auth/profile", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const res = await axios.get(
+            "http://localhost:5000/api/auth/profile",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
           setUser(res.data.user);
         } catch (err) {
           console.error("Failed to fetch user profile", err);
@@ -41,7 +44,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     setLoading(true);
     try {
-      const res = await axios.post("/api/auth/login", { email, password });
+      const res = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
       const { user, token } = res.data;
       localStorage.setItem("token", token);
       setUser(user);
@@ -57,7 +63,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, role) => {
     setLoading(true);
     try {
-      const res = await axios.post("/api/auth/register", {
+      const res = await axios.post("http://localhost:5000/api/auth/register", {
         name,
         email,
         password,
@@ -91,11 +97,15 @@ export const AuthProvider = ({ children }) => {
     if (!user || !token) return;
 
     try {
-      const res = await axios.patch("/api/auth/profile", updates, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.patch(
+        "http://localhost:5000/api/auth/profile",
+        updates,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUser({ ...user, ...updates });
       toast.success("Profile updated successfully");
     } catch (error) {
