@@ -75,15 +75,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = () => {
     try {
-      await axios.post("/api/auth/logout"); // Optional: clear session server-side
-    } catch (err) {
-      console.warn("Logout request failed, clearing locally");
-    } finally {
       localStorage.removeItem("token");
       setUser(null);
       toast.success("Logged out successfully");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      toast.error("Something went wrong during logout.");
     }
   };
 
