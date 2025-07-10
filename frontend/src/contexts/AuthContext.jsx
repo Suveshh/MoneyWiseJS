@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -31,8 +32,10 @@ export const AuthProvider = ({ children }) => {
           );
           setUser(res.data.user);
         } catch (err) {
-          console.error("Failed to fetch user profile", err);
-          localStorage.removeItem("token");
+          console.error("Fetch user failed:", err);
+          if (err.response?.status === 401) {
+            localStorage.removeItem("token");
+          }
         }
       }
       setLoading(false);

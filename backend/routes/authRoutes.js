@@ -10,7 +10,7 @@ const {
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/profile", verifyToken, fetchUser);
+router.get("/profile", verifyToken, fetchUser);
 router.patch("/profile", verifyToken, updateUser);
 
 module.exports = router;

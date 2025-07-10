@@ -17,7 +17,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(formData.email, formData.password); // real login call
+      await login(formData.email, formData.password);
       navigate("/dashboard");
     } catch (err) {
       console.error("Login failed:", err);
