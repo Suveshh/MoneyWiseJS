@@ -1,7 +1,8 @@
 const Question = require("../models/Question");
+const Answer = require("../models/Answer");
 
 exports.addAnswer = async (req, res) => {
-  if (req.user.role !== "expert") {
+  if (req.user.role !== "Expert") {
     return res.status(403).json({ message: "Only experts can answer" });
   }
 
@@ -10,7 +11,8 @@ exports.addAnswer = async (req, res) => {
 
   try {
     const question = await Question.findById(questionId);
-    if (!question) return res.status(404).json({ message: "Question not found" });
+    if (!question)
+      return res.status(404).json({ message: "Question not found" });
 
     question.answers.push({
       content,

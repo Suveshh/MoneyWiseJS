@@ -1,4 +1,5 @@
 const Question = require("../models/Question");
+const mongoose = require("mongoose");
 
 exports.addQuestion = async (req, res) => {
   const { title, content, tags } = req.body;
@@ -12,7 +13,9 @@ exports.addQuestion = async (req, res) => {
     });
     res.status(201).json(question);
   } catch (err) {
-    res.status(500).json({ message: "Failed to post question", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Failed to post question", error: err.message });
   }
 };
 
@@ -46,7 +49,7 @@ exports.deleteQuestion = async (req, res) => {
     if (question.author.toString() !== req.user._id.toString())
       return res.status(403).json({ message: "Unauthorized" });
 
-    await question.remove();
+    await question.deleteOne();
     res.json({ message: "Question deleted" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting question" });

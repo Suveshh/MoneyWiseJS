@@ -18,7 +18,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/answers", answerRoutes);
 
-// Port
 const PORT = process.env.PORT || 5001;
 
 
