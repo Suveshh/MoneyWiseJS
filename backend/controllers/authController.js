@@ -67,7 +67,7 @@ exports.fetchUser = async (req, res) => {
 };
 
 exports.updateUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, role } = req.body;
 
   try {
     const user = await User.findById(req.user._id);
@@ -81,10 +81,6 @@ exports.updateUser = async (req, res) => {
     }
     if (name) user.name = name;
     if (role) user.role = role;
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-    }
     await user.save();
     const updatedUser = await User.findById(user._id).select("-password");
     res.status(200).json({ message: "User updated successfully", updatedUser });

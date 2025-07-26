@@ -138,8 +138,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">
-            Welcome back, Welcome back, {user?.name?.split(" ")[0] || "Guest"}!
-            👋
+            Welcome back, {user?.name?.split(" ")[0] || "Guest"}! 👋 
           </h1>
           <p className="text-neutral-600 dark:text-neutral-400 mt-2">
             Ready to continue your investment learning journey?

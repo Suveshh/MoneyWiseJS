@@ -121,7 +121,7 @@ const Footer = () => {
               © 2025 MoneyWise. All rights reserved.
             </p>
             <p className="text-neutral-400 text-sm mt-2 md:mt-0">
-              Made with ❤️ for financial education
+              Made for financial education
             </p>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   User,
   Trophy,
@@ -14,9 +15,34 @@ import {
   Settings,
   Camera,
 } from "lucide-react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Profile = () => {
+  const { user, setUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    role: "Student",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Format join date
+  const date = new Date(user?.createdAt);
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const formattedDate = date.toLocaleDateString("en-US", options);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        role: user.role || "Student",
+      });
+    }
+  }, [user]);
 
   const tabs = [
     { id: "overview", name: "Overview", icon: User },
@@ -34,7 +60,7 @@ const Profile = () => {
     },
     {
       label: "Current Level",
-      value: 3,
+      value: user?.level || 3,
       icon: Trophy,
       color:
         "text-yellow-600 bg-yellow-100 dark:bg-yellow-800 dark:text-yellow-300",
@@ -162,75 +188,152 @@ const Profile = () => {
     },
   ];
 
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    if (!formData.name.trim() || !formData.email.trim()) {
+      setError("Name and email are required.");
+      toast.error("Name and email are required.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("You need to login to update your profile.");
+        toast.error("You need to login to update your profile.");
+        logout();
+        return;
+      }
+
+      const response = await fetch("http://localhost:5000/api/auth/profile", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError("Session expired. Please log in again.");
+          toast.error("Session expired. Please log in again.");
+          logout();
+        } else {
+          setError("Failed to update profile.");
+          toast.error("Failed to update profile.");
+        }
+        throw new Error(`Failed to update profile: ${response.statusText}`);
+      }
+
+      const updatedUser = await response.json();
+      setFormData({
+        name: updatedUser.name || "",
+        email: updatedUser.email || "",
+        role: updatedUser.role || "Student",
+      });
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setError(
+        "Failed to update profile. Please check if the backend server is running."
+      );
+      toast.error(
+        "Failed to update profile. Please check if the backend server is running."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-8 text-neutral-900 dark:text-neutral-100">
+      <ToastContainer />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
         <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-700 p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            <div className="relative">
-              <div className="w-32 h-32 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                <User className="h-16 w-16 text-blue-600 dark:text-blue-300" />
-              </div>
-              <button className="absolute bottom-2 right-2 p-2 bg-white dark:bg-neutral-700 rounded-full shadow-lg border border-neutral-200 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600">
-                <Camera className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
-              </button>
+          {loading && (
+            <div className="text-center text-neutral-600 dark:text-neutral-400">
+              Loading profile...
             </div>
-
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                <div>
-                  <h1 className="text-3xl font-bold">John Doe</h1>
-                  <p className="text-neutral-600 dark:text-neutral-300">
-                    Student Investor
-                  </p>
-                  <div className="text-sm text-neutral-500 dark:text-neutral-400 space-x-2">
-                    <span>Joined December 2024</span>
-                    <span>•</span>
-                    <span>Level 3</span>
-                  </div>
+          )}
+          {error && (
+            <div className="text-red-600 dark:text-red-400 mb-4">{error}</div>
+          )}
+          {!loading && !error && (
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              <div className="relative">
+                <div className="w-32 h-32 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <User className="h-16 w-16 text-blue-600 dark:text-blue-300" />
                 </div>
-                <button className="mt-4 md:mt-0 flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
+                <button className="absolute bottom-2 right-2 p-2 bg-white dark:bg-neutral-700 rounded-full shadow-lg border border-neutral-200 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-600">
+                  <Camera className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
                 </button>
               </div>
 
-              {/* XP Bar */}
-              <div className="mb-4">
-                <div className="flex justify-between text-sm text-neutral-700 dark:text-neutral-300 mb-1">
-                  <span>Level 3 Progress</span>
-                  <span>425 / 3000 XP</span>
-                </div>
-                <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
-                  <div
-                    className="bg-blue-600 h-2 rounded-full"
-                    style={{ width: `${Math.min((425 % 1000) / 10, 100)}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                {stats.map((stat, idx) => {
-                  const Icon = stat.icon;
-                  return (
-                    <div key={idx} className="text-center">
-                      <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2 ${stat.color}`}
-                      >
-                        <Icon className="h-5 w-5" />
-                      </div>
-                      <div className="text-lg font-bold">{stat.value}</div>
-                      <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {stat.label}
-                      </div>
+              <div className="flex-1 text-center md:text-left">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                  <div>
+                    <h1 className="text-3xl font-bold">
+                      {user?.name || "Anonymous User"}
+                    </h1>
+                    <p className="text-neutral-600 dark:text-neutral-300">
+                      {user?.role || "Student"} Investor
+                    </p>
+                    <div className="text-sm text-neutral-500 dark:text-neutral-400 space-x-2">
+                      <span>Joined {formattedDate}</span>
+                      <span>•</span>
+                      <span>Level {user?.level || 1}</span>
                     </div>
-                  );
-                })}
+                  </div>
+                  <button
+                    onClick={() => setActiveTab("settings")}
+                    className="mt-4 md:mt-0 flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </button>
+                </div>
+
+                {/* XP Bar */}
+                <div className="mb-4">
+                  <div className="flex justify-between text-sm text-neutral-700 dark:text-neutral-300 mb-1">
+                    <span>Level {user?.level || 1} Progress</span>
+                    <span>425 / 3000 XP</span>
+                  </div>
+                  <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
+                    <div
+                      className="bg-blue-600 h-2 rounded-full"
+                      style={{ width: `${Math.min((425 % 1000) / 10, 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  {stats.map((stat, idx) => {
+                    const Icon = stat.icon;
+                    return (
+                      <div key={idx} className="text-center">
+                        <div
+                          className={`w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-2 ${stat.color}`}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div className="text-lg font-bold">{stat.value}</div>
+                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
+                          {stat.label}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Tabs */}
@@ -425,15 +528,22 @@ const Profile = () => {
         {activeTab === "settings" && (
           <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700">
             <h2 className="text-xl font-semibold mb-6">Account Settings</h2>
-            <div className="space-y-6">
+            {error && (
+              <div className="text-red-600 dark:text-red-400 mb-4">{error}</div>
+            )}
+            <form onSubmit={handleUpdateProfile} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Full Name
                 </label>
                 <input
                   type="text"
-                  value="John Doe"
-                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 rounded-lg"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={loading}
                 />
               </div>
               <div>
@@ -442,25 +552,44 @@ const Profile = () => {
                 </label>
                 <input
                   type="email"
-                  value="john.doe@example.com"
-                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 rounded-lg"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={loading}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                   Role
                 </label>
-                <select className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 rounded-lg">
-                  <option value="student">Student</option>
-                  <option value="expert">Expert</option>
+                <select
+                  value={formData.role}
+                  onChange={(e) =>
+                    setFormData({ ...formData, role: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={loading}
+                >
+                  <option value="Student">Student</option>
+                  <option value="Expert">Expert</option>
                 </select>
               </div>
               <div className="pt-4">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium">
-                  Save Changes
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-neutral-300 dark:disabled:bg-neutral-600 text-white px-6 py-2 rounded-lg font-medium flex items-center"
+                >
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  ) : (
+                    "Save Changes"
+                  )}
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         )}
       </div>
