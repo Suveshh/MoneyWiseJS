@@ -5,10 +5,11 @@ const {
   addQuestion,
   editQuestion,
   deleteQuestion,
+  getAllQuestions,
 } = require("../controllers/questionController");
 
-router.post("/", verifyToken, addQuestion);
-router.put("/:id", verifyToken, editQuestion);
+router.post("/add", verifyToken, addQuestion);
 router.delete("/:id", verifyToken, deleteQuestion);
+router.get("/", verifyToken, getAllQuestions);
 
 module.exports = router;

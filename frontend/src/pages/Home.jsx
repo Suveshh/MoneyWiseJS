@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext"; // Added useAuth import
 import {
   TrendingUp,
   Brain,
@@ -16,6 +17,8 @@ import {
 } from "lucide-react";
 
 const Home = () => {
+  const { user } = useAuth(); // Access user from AuthContext
+
   const features = [
     {
       icon: Brain,
@@ -127,13 +130,15 @@ const Home = () => {
               and real-world skills.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
-              <Link
-                to="/register"
-                className="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
-              >
-                Start Learning Free
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              {!user && ( // Show "Start Learning Free" only if not logged in
+                <Link
+                  to="/register"
+                  className="inline-flex items-center px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
+                >
+                  Start Learning Free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              )}
               <Link
                 to="/games"
                 className="inline-flex items-center px-8 py-4 bg-white dark:bg-neutral-800 text-blue-600 border-2 border-blue-600 rounded-xl font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all duration-200"
@@ -167,7 +172,7 @@ const Home = () => {
                   className="bg-white dark:bg-neutral-800 p-6 rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-700 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
                 >
                   <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-xl flex items-center justify-center mb-4">
-                    <Icon className="h-6 w-6 text-blue-100" />
+                    <Icon className="h-6 w-6 text-blue-800 dark:text-blue-100" />
                   </div>
                   <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-2">
                     {feature.title}
@@ -296,13 +301,15 @@ const Home = () => {
             Join over 50,000 students learning smart investing through games and
             expert guidance.
           </p>
-          <Link
-            to="/register"
-            className="inline-flex items-center px-8 py-4 bg-white hover:bg-neutral-50 text-blue-600 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
-          >
-            Get Started for Free
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Link>
+          {!user && ( // Show "Get Started for Free" only if not logged in
+            <Link
+              to="/register"
+              className="inline-flex items-center px-8 py-4 bg-white hover:bg-neutral-50 text-blue-600 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105"
+            >
+              Get Started for Free
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          )}
         </div>
       </section>
     </div>

@@ -19,27 +19,6 @@ exports.addQuestion = async (req, res) => {
   }
 };
 
-exports.editQuestion = async (req, res) => {
-  const { id } = req.params;
-  const { title, content, tags } = req.body;
-
-  try {
-    const question = await Question.findById(id);
-    if (!question) return res.status(404).json({ message: "Not found" });
-    if (question.author.toString() !== req.user._id.toString())
-      return res.status(403).json({ message: "Unauthorized" });
-
-    question.title = title;
-    question.content = content;
-    question.tags = tags;
-
-    await question.save();
-    res.json(question);
-  } catch (err) {
-    res.status(500).json({ message: "Error updating question" });
-  }
-};
-
 exports.deleteQuestion = async (req, res) => {
   const { id } = req.params;
 
@@ -53,5 +32,22 @@ exports.deleteQuestion = async (req, res) => {
     res.json({ message: "Question deleted" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting question" });
+  }
+};
+exports.getAllQuestions = async (req, res) => {
+  try {
+    const questions = await Question.find()
+      .populate("author", "name avatar role level email") // Populate question author
+      .populate({
+        path: "answers",
+        populate: {
+          path: "author",
+          select: "name avatar role title",
+        },
+      });
+    res.status(200).json(questions);
+  } catch (err) {
+    console.error("Error fetching questions:", err);
+    res.status(500).json({ message: "Error fetching questions", error: err.message });
   }
 };
