@@ -1,3 +1,4 @@
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import {
   GamepadIcon,
@@ -17,6 +18,7 @@ import {
 
 const Games = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const navigate = useNavigate();
 
   const categories = [
     { id: "all", name: "All Games", icon: GamepadIcon },
@@ -40,6 +42,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6801874/pexels-photo-6801874.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["Live market data", "Portfolio tracking", "Leaderboards"],
+      route: "/games/fantasy-trading", // Add route for each game
     },
     {
       id: "crisis-simulator",
@@ -58,6 +61,7 @@ const Games = () => {
         "Risk assessment",
         "Strategy building",
       ],
+      route: "/games/crisis-simulator",
     },
     {
       id: "chart-master",
@@ -72,6 +76,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["Pattern recognition", "Real charts", "Instant feedback"],
+      route: "/games/chart-master",
     },
     {
       id: "build-portfolio",
@@ -90,6 +95,7 @@ const Games = () => {
         "Risk analysis",
         "Asset allocation",
       ],
+      route: "/games/build-portfolio", // This should match your route for BuildPortfolio component
     },
     {
       id: "time-traveler",
@@ -104,6 +110,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["Historical data", "Long-term simulation", "Compound growth"],
+      route: "/games/time-traveler",
     },
     {
       id: "options-simulator",
@@ -118,6 +125,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6772076/pexels-photo-6772076.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["Visual payoffs", "Risk scenarios", "Strategy comparison"],
+      route: "/games/options-simulator",
     },
     {
       id: "startup-ipo",
@@ -132,6 +140,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6801642/pexels-photo-6801642.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["Business simulation", "IPO process", "Valuation modeling"],
+      route: "/games/startup-ipo",
     },
     {
       id: "market-news-reaction",
@@ -146,6 +155,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6801642/pexels-photo-6801642.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["Real news events", "Sentiment analysis", "Quick rounds"],
+      route: "/games/market-news-reaction",
     },
     {
       id: "stockaire",
@@ -160,6 +170,7 @@ const Games = () => {
       image:
         "https://images.pexels.com/photos/6801872/pexels-photo-6801872.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&dpr=2",
       features: ["AI assistance", "Expert help", "Progressive difficulty"],
+      route: "/games/stockaire",
     },
   ];
 
@@ -179,6 +190,12 @@ const Games = () => {
       default:
         return "bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300";
     }
+  };
+
+  // Function to handle game launch
+  const handlePlayGame = (game) => {
+    // Navigate to the game route
+    navigate(game.route);
   };
 
   return (
@@ -282,8 +299,11 @@ const Games = () => {
                   </div>
                 </div>
 
-                {/* Play Button */}
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center">
+                {/* Play Button - NOW WITH FUNCTIONALITY */}
+                <button 
+                  onClick={() => handlePlayGame(game)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center"
+                >
                   <Play className="h-4 w-4 mr-2" />
                   Play Now
                 </button>

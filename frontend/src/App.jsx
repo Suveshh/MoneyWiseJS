@@ -14,6 +14,12 @@ import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import BuildPortfolio from "./components/Games/BuildPortfolio";
+import ChartMaster from "./components/Games/ChartMaster";
+import CrisisSimulator from "./components/Games/CrisisSimulator";
+import OptionsSimulator from "./components/Games/OptionsSimulator";
+import StartupIPO from "./components/Games/StartupIPO";
+import TimeTraveler from "./components/Games/TimeTraveler";
 import "./index.css";
 
 function App() {
@@ -35,6 +41,12 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/games/build-portfolio" element={<BuildPortfolio />} />
+                <Route path="/games/chart-master" element={<ChartMaster />} />
+                <Route path="/games/crisis-simulator" element={<CrisisSimulator />} />
+                <Route path="/games/options-simulator" element={<OptionsSimulator />} />
+                <Route path="/games/startup-IPO" element={<StartupIPO />} />
+                <Route path="/games/time-traveler" element={<TimeTraveler />} />
               </Routes>
             </Layout>
 
